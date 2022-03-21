@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace dle_Wordle
 {
@@ -10,13 +10,15 @@ namespace dle_Wordle
             int x = 0;
             string word;
 
-            //store colored letters
+            //store colored letters for grid
             int[,] color1 = new int[6, 5] { { 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0 } };
-            //store guess
+            //store guesses for grid
             string[] guesses = new string[6] { "OOOOO", "OOOOO", "OOOOO", "OOOOO", "OOOOO", "OOOOO" };
+            //store colored letters for keyboard
+            int[] colors2 = new int[26] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
             //introduction
-            Console.WriteLine("Welcome to Dordle! \n-----------------\n - You have 6 tries to guess the secret word. \n - Guess a 5 letter word, and the letters printed yellow are in the secret word, but in another spot.\n - Letters printed in green are letters in the secret word and in that spot.\n - Otherwise, not in the word.\n - Enjoy! :D\n - Press [ENTER] to start");
+            Console.Write("Welcome to Dordle! \n-----------------\n - You have 6 tries to guess the secret word. \n - Guess a 5 letter word, and the letters printed yellow are in the secret word, but in another spot.\n - Letters printed in green are letters in the secret word and in that spot.\n - Otherwise, not in the word.\n - Enjoy! :D\n - Press [ENTER] to start");
             Console.ReadLine();
 
             //generate random word
@@ -25,32 +27,8 @@ namespace dle_Wordle
             //6 guesses loop
             while (x != 6)
             {
-                Console.Clear();
-                //array of words
-                for (int j = 0; j < 6; j++)
-                {
-                    //array for char within words
-                    for (int n = 0; n < 5; n++)
-                    {
-                        if (color1[j, n] == 1)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Yellow;
-                            Console.Write(guesses[j].Substring(n, 1));
-                            Console.ResetColor();
-                        }
-                        else if (color1[j, n] == 2)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Green;
-                            Console.Write(guesses[j].Substring(n, 1));
-                            Console.ResetColor();
-                        }
-                        else
-                            Console.Write(guesses[j].Substring(n, 1));
-                    }
-                    //goes to next line
-                    Console.WriteLine();
-                }
-                Console.WriteLine();
+                //prints grid of previous guesses
+                WordGrid(color1, guesses);
 
                 //prompt
                 Console.WriteLine("Guess #" + (x + 1) + "\n--------");
@@ -65,12 +43,15 @@ namespace dle_Wordle
                     guesses[x] = Console.ReadLine();
                 }
 
-                //fills color array with colored values {0, 1, 2}
+                //fills color array with colored values {grid}
                 for (int i = 0; i < 5; i++)
                 {
                     color1[x, i] = colorize(guesses[x], word, i);
                 }
 
+                //fills second color array with colored values {keyboard}
+
+                
                 //checks if matchs
                 if (guesses[x] != word)
                 {
@@ -78,64 +59,14 @@ namespace dle_Wordle
                     //lose sequence after 6 tries
                     if (x == 6)
                     {
-                        Console.Clear();
-                        //array of words
-                        for (int j = 0; j < 6; j++)
-                        {
-                            //array for char within words
-                            for (int n = 0; n < 5; n++)
-                            {
-                                if (color1[j, n] == 1)
-                                {
-                                    Console.ForegroundColor = ConsoleColor.Yellow;
-                                    Console.Write(guesses[j].Substring(n, 1));
-                                    Console.ResetColor();
-                                }
-                                else if (color1[j, n] == 2)
-                                {
-                                    Console.ForegroundColor = ConsoleColor.Green;
-                                    Console.Write(guesses[j].Substring(n, 1));
-                                    Console.ResetColor();
-                                }
-                                else
-                                    Console.Write(guesses[j].Substring(n, 1));
-                            }
-                            //goes to next line
-                            Console.WriteLine();
-                        }
-                        Console.WriteLine();
+                        WordGrid(color1, guesses);
                         Console.WriteLine("You Lose :(");
                         Console.WriteLine("The word was " + word);
                     }
                 }
                 else if (guesses[x] == word)
                 {
-                    Console.Clear();
-                    //array of words
-                    for (int j = 0; j < 6; j++)
-                    {
-                        //array for char within words
-                        for (int n = 0; n < 5; n++)
-                        {
-                            if (color1[j, n] == 1)
-                            {
-                                Console.ForegroundColor = ConsoleColor.Yellow;
-                                Console.Write(guesses[j].Substring(n, 1));
-                                Console.ResetColor();
-                            }
-                            else if (color1[j, n] == 2)
-                            {
-                                Console.ForegroundColor = ConsoleColor.Green;
-                                Console.Write(guesses[j].Substring(n, 1));
-                                Console.ResetColor();
-                            }
-                            else
-                                Console.Write(guesses[j].Substring(n, 1));
-                        }
-                        //goes to next line
-                        Console.WriteLine();
-                    }
-                    Console.WriteLine();
+                    WordGrid(color1, guesses);
                     //win sequence
                     Console.WriteLine("Splendid! You win!");
                     x = 6;
@@ -148,10 +79,10 @@ namespace dle_Wordle
             {
                 int randomWord;
 
-                string[] wordBank = new string[20] { "chart", "voids", "pizza", "bongo", "fraud", "limbo", "youth", "quail", "money", "bring", "zebra", "jelly", "upper", "whale", "freer", "kebab", "flick", "audio", "idiot", "juddy" };
+                string[] wordBank = new string[36] { "chart", "voids", "pizza", "bongo", "fraud", "limbo", "youth", "quail", "money", "bring", "zebra", "jelly", "upper", "whale", "freer", "kebab", "flick", "audio", "idiot", "juddy", "pupil", "which", "there", "their", "about", "would", "these", "other", "words", "could", "write", "first", "water", "after", "where", "right" };
 
                 Random rng = new Random();
-                randomWord = rng.Next(0, 19);
+                randomWord = rng.Next(0, 35);
 
                 return wordBank[randomWord];
             }
@@ -188,9 +119,49 @@ namespace dle_Wordle
 
                 return returnValue;
             }
+
+            //prints 5x6
+            static void WordGrid(int[,] color1, string[] guesses)
+            {
+                Console.Clear();
+                //array of words
+                for (int j = 0; j < 6; j++)
+                {
+                    //array for char within words
+                    for (int n = 0; n < 5; n++)
+                    {
+                        if (color1[j, n] == 1)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.Write(guesses[j].Substring(n, 1));
+                            Console.ResetColor();
+                        }
+                        else if (color1[j, n] == 2)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.Write(guesses[j].Substring(n, 1));
+                            Console.ResetColor();
+                        }
+                        else
+                            Console.Write(guesses[j].Substring(n, 1));
+                    }
+                    //goes to next line
+                    Console.WriteLine();
+                }
+                Console.WriteLine();
+            }
+
+            //prints keyboard with colors
+            static void Keyboard(int[] colors2)
+            {
+                string[] alphabet = new string[26] { " q ", " w ", " e ", " r ", " t ", " y ", " u ", " i ", " o ", " p ", " a ", " s ", " d ", " f ", " g ", " h ", " j ", " k ", " l ", " z ", " x ", " c ", " v ", " b ", " n ", " m ", };
+                
+                for (int i = 0; i < 26; i++)
+                {
+
+                }
+            }
         }
     }
 }
-
-
 
